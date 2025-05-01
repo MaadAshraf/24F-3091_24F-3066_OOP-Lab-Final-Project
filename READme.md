@@ -21,7 +21,7 @@ Language: C++.
 
 Libraries: Usage of <iostream> for I/O and <fstream> for file handling.
 
-Constraints: Used pointers, I/O (cout/cin with using namespace std), standard spacing.
+Constraints: Used pointers, I/O (cout/cin with using namespace std).
 
 What We Did in the Project
 
