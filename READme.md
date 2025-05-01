@@ -12,8 +12,8 @@ Game over condition: revoltRisk > 80, checked during "Next Turn."
 
 Project Division
 
-24F-3091: Implemented Population, Military, Leadership, Economy, Bank, and EventHandler systems, and finalized the turn-based loop and menu system.
-24F-3066: Implemented Resources, and SocialStructure systems, handled file I/O.
+24F-3091: Implemented Military, Leadership, Economy, Bank, and EventHandler systems, and finalized the turn-based loop and menu system.
+24F-3066: Implemented Population, Resources, and SocialStructure systems, handled file I/O.
 
 Technologies Used
 
@@ -21,7 +21,7 @@ Language: C++.
 
 Libraries: Usage of <iostream> for I/O and <fstream> for file handling.
 
-Constraints: No <vector>, used raw pointers, I/O (cout/cin with using namespace std), standard spacing.
+Constraints: Used pointers, I/O (cout/cin with using namespace std), standard spacing.
 
 What We Did in the Project
 
@@ -31,6 +31,5 @@ Created classes for each system (Population, Resources, Military, etc.) with met
 
 Integrated systems via main.cpp with a menu-driven interface and turn-based gameplay loop.
 Added file I/O to save/load game state and log scores.
-Removed <stdexcept> and replaced exception handling with cout messages for errors (e.g., "Invalid resource amounts").
-Streamlined the menu from 21 options to 12 with sub-menus for better usability.
-Used Git branches (feature/population, feature/military, feature/resources, feature/leadership, feature/economy, feature/bank, feature/event-handler, feature/social-structure, feature/file-io) to organize development of each system and merged them into main for a complete workflow, aiming for bonus marks.
+Exception handling with cout messages for errors (e.g., "Invalid resource amounts").
+Streamlined the menu of 12 with sub-menus for better usability.
