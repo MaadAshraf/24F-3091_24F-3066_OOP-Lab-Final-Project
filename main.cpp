@@ -1,4 +1,6 @@
 #include "Stronghold.h"
+#include "Phase2.h"
+#include "Communication.h"
 using namespace std;
 class Game
 {
@@ -11,16 +13,22 @@ private:
     Bank* bank;
     Resources* resources;
     EventHandler* eventHandler;
+    AllianceManager* allianceManager;
+    TradeSystem* tradeSystem;
+    ConflictManager* conflictManager;
+    MapSystem* mapSystem;
+    Logger* logger;
+    comms* communication;
     int isRunning;
     int turn;
-    void saveGame() 
+    void saveGame()
     {
         ofstream outFile("game_save.txt");
         if (!outFile)
         {
             cout << "Failed to open game_save.txt" << endl;
         }
-        else 
+        else
         {
             population->saveState(outFile);
             resources->saveState(outFile);
@@ -34,14 +42,14 @@ private:
             outFile.close();
         }
     }
-    void loadGame() 
+    void loadGame()
     {
         ifstream inFile("game_save.txt");
         if (!inFile)
         {
             cout << "Failed to open game_save.txt" << endl;
         }
-        else 
+        else
         {
             population->loadState(inFile);
             resources->loadState(inFile);
@@ -59,7 +67,8 @@ private:
             inFile.close();
         }
     }
-    void logScore() 
+
+    void logScore()
     {
         ofstream logFile("score.txt", ios::app);
         if (!logFile)
@@ -110,8 +119,14 @@ public:
         bank = new Bank();
         resources = new Resources();
         eventHandler = new EventHandler();
+        allianceManager = new AllianceManager();
+        tradeSystem = new TradeSystem();
+        conflictManager = new ConflictManager();
+        mapSystem = new MapSystem();
+        logger = new Logger();
+        communication = new comms();
     }
-    ~Game() 
+    ~Game()
     {
         delete socialStructure;
         delete population;
@@ -121,8 +136,14 @@ public:
         delete bank;
         delete resources;
         delete eventHandler;
+        delete allianceManager;
+        delete tradeSystem;
+        delete conflictManager;
+        delete mapSystem;
+        delete logger;
+        delete communication;
     }
-    void run() 
+    void run()
     {
         isRunning = 1;
         logScore();
@@ -141,6 +162,11 @@ public:
             cout << "10. Trigger Event" << endl;
             cout << "11. Next Turn" << endl;
             cout << "12. Exit" << endl;
+            cout << "13. Alliance Management" << endl;
+            cout << "14. Trade System" << endl;
+            cout << "15. Conflict Management" << endl;
+            cout << "16. Map System" << endl;
+            cout << "17. Communication" << endl;
             cout << "Enter choice: ";
             int choice;
             cin >> choice;
@@ -164,7 +190,7 @@ public:
                 int subChoice;
                 cin >> subChoice;
                 cin.ignore();
-                if (subChoice == 1) 
+                if (subChoice == 1)
                 {
                     double food = (double)resources->getResource(0) / 10.0;
                     cout << "Enter employment, shelter (0-100): ";
@@ -202,7 +228,7 @@ public:
                 int subChoice;
                 cin >> subChoice;
                 cin.ignore();
-                if (subChoice == 1) 
+                if (subChoice == 1)
                 {
                     cout << "Enter food, wood, stone, iron to gather: ";
                     int food, wood, stone, iron;
@@ -211,7 +237,7 @@ public:
                     resources->gatherResources(food, wood, stone, iron);
                     cout << "Resources: Food=" << resources->getResource(0) << ", Wood=" << resources->getResource(1) << ", Stone=" << resources->getResource(2) << ", Iron=" << resources->getResource(3) << endl;
                 }
-                else if (subChoice == 2) 
+                else if (subChoice == 2)
                 {
                     cout << "Enter food, wood, stone, iron to consume: ";
                     int food, wood, stone, iron;
@@ -225,7 +251,7 @@ public:
                 logScore();
                 break;
             }
-            case 5: 
+            case 5:
             {
                 cout << "1. Recruit Soldiers" << endl;
                 cout << "2. Equip Weapons" << endl;
@@ -234,7 +260,7 @@ public:
                 int subChoice;
                 cin >> subChoice;
                 cin.ignore();
-                if (subChoice == 1) 
+                if (subChoice == 1)
                 {
                     cout << "Enter number of soldiers to recruit: ";
                     int soldiers;
@@ -243,7 +269,7 @@ public:
                     military->recruitSoldiers(soldiers, *population);
                     cout << "Soldiers: " << military->getSoldierCount() << ", Strength: " << military->getStrength() << endl;
                 }
-                else if (subChoice == 2) 
+                else if (subChoice == 2)
                 {
                     cout << "Enter iron amount to equip weapons: ";
                     int iron2;
@@ -266,7 +292,7 @@ public:
                 logScore();
                 break;
             }
-            case 6: 
+            case 6:
             {
                 cout << "1. Generate Income" << endl;
                 cout << "2. Trade Resources" << endl;
@@ -281,7 +307,7 @@ public:
                     economy->generateIncome(population->getTotalPopulation());
                     cout << "Wealth: " << economy->getWealth() << ", Employment Rate: " << economy->getEmploymentRate() << endl;
                 }
-                else if (subChoice == 2) 
+                else if (subChoice == 2)
                 {
                     cout << "Enter give type, give amount, receive type, receive amount: ";
                     int giveType, giveAmount, receiveType, receiveAmount;
@@ -290,7 +316,7 @@ public:
                     economy->tradeResources(giveType, giveAmount, receiveType, receiveAmount, *resources);
                     cout << "Wealth: " << economy->getWealth() << ", Resources: Food=" << resources->getResource(0) << ", Wood=" << resources->getResource(1) << ", Stone=" << resources->getResource(2) << ", Iron=" << resources->getResource(3) << endl;
                 }
-                else if (subChoice == 3) 
+                else if (subChoice == 3)
                 {
                     cout << "Enter new employment rate (0-100): ";
                     double rate;
@@ -313,7 +339,7 @@ public:
                 int subChoice;
                 cin >> subChoice;
                 cin.ignore();
-                if (subChoice == 1) 
+                if (subChoice == 1)
                 {
                     cout << "Enter new tax rate (0-100): ";
                     double taxRate;
@@ -322,7 +348,7 @@ public:
                     leadership->setTaxRate(taxRate, *economy, *population);
                     cout << "Influence: " << leadership->getInfluence() << ", Tax Rate: " << leadership->getTaxRate() << endl;
                 }
-                else if (subChoice == 2) 
+                else if (subChoice == 2)
                 {
                     cout << "Enter influence boost amount: ";
                     double influenceAmount;
@@ -369,7 +395,7 @@ public:
                     bank->makeInvestment(investment, *economy, *population);
                     cout << "Reserves: " << bank->getReserves() << ", Loan Amount: " << bank->getLoanAmount() << endl;
                 }
-                else if (subChoice == 3) 
+                else if (subChoice == 3)
                 {
                     cout << "Enter repayment amount: ";
                     double repayment;
@@ -414,6 +440,145 @@ public:
                 cout << "Exiting game..." << endl;
                 isRunning = 0;
                 break;
+            case 13:
+            {
+                cout << "1. Form Alliance" << endl;
+                cout << "2. Break Alliance" << endl;
+                cout << "3. Check Alliance Status" << endl;
+                cout << "Enter sub-choice: ";
+                int subChoice;
+                cin >> subChoice;
+                cin.ignore();
+                string player1, player2;
+                cout << "Enter player names: ";
+                cin >> player1 >> player2;
+                cin.ignore();
+                if (subChoice == 1)
+                    allianceManager->formAlliance(player1, player2);
+                else if (subChoice == 2)
+                    allianceManager->breakAlliance(player1, player2);
+                else if (subChoice == 3)
+                    allianceManager->getAllianceStatus(player1, player2);
+                else
+                    cout << "Invalid sub-choice" << endl;
+                break;
+            }
+            case 14:
+            {
+                cout << "1. Offer Trade" << endl;
+                cout << "2. Attempt Smuggle" << endl;
+                cout << "Enter sub-choice: ";
+                int subChoice;
+                cin >> subChoice;
+                cin.ignore();
+                string from, to, resource;
+                int quantity;
+                if (subChoice == 1)
+                {
+                    cout << "Enter from, to, resource, quantity: ";
+                    cin >> from >> to >> resource >> quantity;
+                    cin.ignore();
+                    tradeSystem->offerTrade(from, to, resource, quantity);
+                }
+                else if (subChoice == 2)
+                {
+                    cout << "Enter from, to, resource: ";
+                    cin >> from >> to >> resource;
+                    cin.ignore();
+                    tradeSystem->attemptSmuggle(from, to, resource);
+                }
+                else
+                    cout << "Invalid sub-choice" << endl;
+                break;
+            }
+            case 15:
+            {
+                cout << "1. Declare War" << endl;
+                cout << "2. Betray Alliance" << endl;
+                cout << "Enter sub-choice: ";
+                int subChoice;
+                cin >> subChoice;
+                cin.ignore();
+                string attacker, defender;
+                if (subChoice == 1)
+                {
+                    cout << "Enter attacker, defender: ";
+                    cin >> attacker >> defender;
+                    cin.ignore();
+                    conflictManager->declareWar(attacker, defender);
+                }
+                else if (subChoice == 2)
+                {
+                    cout << "Enter attacker, ally: ";
+                    cin >> attacker >> defender;
+                    cin.ignore();
+                    conflictManager->betrayAlliance(attacker, defender);
+                }
+                else
+                    cout << "Invalid sub-choice" << endl;
+                break;
+            }
+            case 16:
+            {
+                cout << "1. Place Kingdom" << endl;
+                cout << "2. Move Player" << endl;
+                cout << "3. Display Map" << endl;
+                cout << "Enter sub-choice: ";
+                int subChoice;
+                cin >> subChoice;
+                cin.ignore();
+                string player;
+                if (subChoice == 1)
+                {
+                    int x, y;
+                    cout << "Enter player, x, y: ";
+                    cin >> player >> x >> y;
+                    cin.ignore();
+                    mapSystem->placeKingdom(player, x, y);
+                }
+                else if (subChoice == 2)
+                {
+                    string direction;
+                    cout << "Enter player, direction: ";
+                    cin >> player >> direction;
+                    cin.ignore();
+                    mapSystem->movePlayer(player, direction);
+                }
+                else if (subChoice == 3)
+                {
+                    mapSystem->displayMap();
+                }
+                else
+                    cout << "Invalid sub-choice" << endl;
+                break;
+            }
+            case 17:
+            {
+                cout << "1. Send Message" << endl;
+                cout << "2. Receive Message" << endl;
+                cout << "Enter sub-choice: ";
+                int subChoice;
+                cin >> subChoice;
+                cin.ignore();
+                string from, to, message;
+                if (subChoice == 1)
+                {
+                    cout << "Enter from, to, message: ";
+                    getline(cin, from);
+                    getline(cin, to);
+                    getline(cin, message);
+                    communication->sendMessage(from, to, message);
+                }
+                else if (subChoice == 2)
+                {
+                    cout << "Enter player: ";
+                    getline(cin, from);
+                    communication->receiveMessage(from);
+                }
+                else
+                    cout << "Invalid sub-choice" << endl;
+                break;
+            }
             default:
                 cout << "Invalid choice" << endl;
             }
