@@ -16,7 +16,7 @@ Phase 1
 24F-3091: Implemented Military, Leadership, Economy, Bank, and EventHandler systems, and finalized the turn-based loop and menu system.
 24F-3066: Implemented Population, Resources, and SocialStructure systems, handled file I/O.
 Phase 2
-24F-3091: Imolemented main (added new files).
+24F-3091: Implemented main (added new files).
 24F-3066: Implemented phase2 cpp and header file, communication cpp and header file.
 
 Technologies Used
