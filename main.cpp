@@ -27,7 +27,7 @@ private:
         ofstream outFile("game.txt");
         if (!outFile)
         {
-            cout << "Failed to open game_save.txt" << endl;
+            cout << "Failed to open game.txt" << endl;
         }
         else
         {
@@ -49,7 +49,7 @@ private:
         ifstream inFile("game.txt");
         if (!inFile)
         {
-            cout << "Failed to open game_save.txt" << endl;
+            cout << "Failed to open game.txt" << endl;
         }
         else
         {
@@ -64,7 +64,7 @@ private:
             inFile >> turn;
             if (inFile.fail())
             {
-                cout << "Failed to parse save file" << endl;
+                cout << "Failed to save save file" << endl;
             }
             inFile.close();
         }
