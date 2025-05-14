@@ -21,9 +21,10 @@ private:
     comms* communication;
     int isRunning;
     int turn;
+
     void saveGame()
     {
-        ofstream outFile("game_save.txt");
+        ofstream outFile("game.txt");
         if (!outFile)
         {
             cout << "Failed to open game_save.txt" << endl;
@@ -42,9 +43,10 @@ private:
             outFile.close();
         }
     }
+
     void loadGame()
     {
-        ifstream inFile("game_save.txt");
+        ifstream inFile("game.txt");
         if (!inFile)
         {
             cout << "Failed to open game_save.txt" << endl;
@@ -90,6 +92,7 @@ private:
             logFile.close();
         }
     }
+
     void processTurn()
     {
         double food = (double)resources->getResource(0) / 10.0;
@@ -108,6 +111,7 @@ private:
         }
         logScore();
     }
+
 public:
     Game() : isRunning(0), turn(0)
     {
@@ -126,6 +130,7 @@ public:
         logger = new Logger();
         communication = new comms();
     }
+
     ~Game()
     {
         delete socialStructure;
@@ -143,6 +148,7 @@ public:
         delete logger;
         delete communication;
     }
+
     void run()
     {
         isRunning = 1;
@@ -161,12 +167,12 @@ public:
             cout << "9. Manage Social Structure" << endl;
             cout << "10. Trigger Event" << endl;
             cout << "11. Next Turn" << endl;
-            cout << "12. Exit" << endl;
+            cout << "12. Communication" << endl;
             cout << "13. Alliance Management" << endl;
             cout << "14. Trade System" << endl;
             cout << "15. Conflict Management" << endl;
             cout << "16. Map System" << endl;
-            cout << "17. Communication" << endl;
+            cout << "17. Exit" << endl;
             cout << "Enter choice: ";
             int choice;
             cin >> choice;
@@ -431,15 +437,43 @@ public:
                 logScore();
                 break;
             case 11:
+            {
                 cout << "Advancing to next turn..." << endl;
                 turn++;
                 processTurn();
                 cout << "Turn " << turn << " completed." << endl;
                 break;
+            }
             case 12:
-                cout << "Exiting game..." << endl;
-                isRunning = 0;
-                break;
+            {
+                cout << "1. Send Message" << endl;
+                cout << "2. Receive Message" << endl;
+                cout << "Enter sub-choice: ";
+                int subChoice;
+                cin >> subChoice;
+                cin.ignore();
+                string from, to, message;
+                if (subChoice == 1)
+                {
+                    cout << "Enter from, to, message: ";
+                    getline(cin, from);
+                    getline(cin, to);
+                    getline(cin, message);
+                    communication->sendMessage(from, to, message);
+                }
+                else if (subChoice == 2)
+                {
+                    cout << "Enter player: ";
+                    getline(cin, from);
+                    communication->receiveMessage(from);
+                }
+                else
+                {
+                    cout << "Invalid sub-choice" << endl;
+                    break;
+                }
+
+            }
             case 13:
             {
                 cout << "1. Form Alliance" << endl;
@@ -515,15 +549,17 @@ public:
                     conflictManager->betrayAlliance(attacker, defender);
                 }
                 else
+                {
                     cout << "Invalid sub-choice" << endl;
-                break;
+                    break;
+                }
             }
             case 16:
             {
                 cout << "1. Place Kingdom" << endl;
                 cout << "2. Move Player" << endl;
                 cout << "3. Display Map" << endl;
-                cout << "Enter sub-choice: ";
+                cout << "Enter choice: ";
                 int subChoice;
                 cin >> subChoice;
                 cin.ignore();
@@ -554,37 +590,20 @@ public:
             }
             case 17:
             {
-                cout << "1. Send Message" << endl;
-                cout << "2. Receive Message" << endl;
-                cout << "Enter sub-choice: ";
-                int subChoice;
-                cin >> subChoice;
-                cin.ignore();
-                string from, to, message;
-                if (subChoice == 1)
-                {
-                    cout << "Enter from, to, message: ";
-                    getline(cin, from);
-                    getline(cin, to);
-                    getline(cin, message);
-                    communication->sendMessage(from, to, message);
-                }
-                else if (subChoice == 2)
-                {
-                    cout << "Enter player: ";
-                    getline(cin, from);
-                    communication->receiveMessage(from);
-                }
-                else
-                    cout << "Invalid sub-choice" << endl;
+                cout << "Exiting game..." << endl;
+                isRunning = 0;
                 break;
+
             }
             default:
+            {
                 cout << "Invalid choice" << endl;
+            }
             }
         }
     }
 };
+
 int main()
 {
     Game game;
