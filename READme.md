@@ -17,7 +17,7 @@ Phase 1
 24F-3066: Implemented Population, Resources, and SocialStructure systems, handled file I/O.
 Phase 2
 24F-3091: Implemented main (added new files).
-24F-3066: Implemented phase2 cpp and header file, communication cpp and header file.
+24F-3066: Implemented phase2 cpp and phase2 header file, communication cpp and communication header file.
 
 Technologies Used
 
